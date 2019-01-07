@@ -10,7 +10,12 @@ class Search extends React.Component {
     }
     search = (query) => {
         BooksAPI.search(query).then((books) => {
-            this.setState({ books });
+            console.log(books);
+            if (books.error) {
+                this.setState({ books: [] });
+            } else {
+                this.setState({ books });
+            }
         });
     }
     onTextChange = (e) => {
