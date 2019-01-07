@@ -6,33 +6,41 @@ import * as BooksAPI from './BooksAPI';
 import './App.css';
 
 class BooksApp extends React.Component {
+  constructor(props) {
+    super(props)
+    this.onBookUpdate = this.onBookUpdate.bind(this);
+  }
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    books: [],
-    showSearchPage: false
+    currentlyReading: [],
+    wantToRead: [],
+    read: []
   }
   componentDidMount() {
+    console.log(BooksAPI.getAll());
     BooksAPI.getAll().then(books => {
-      this.setState({ books });
+      this.setState(() => {
+        return {
+          currentlyReading: books.filter((book) => book.shelf === 'currentlyReading'),
+          wantToRead: books.filter((book) => book.shelf === 'wantToRead'),
+          read: books.filter((book) => book.shelf === 'read')
+        };
+      });
     });
   }
-  onBookUpdate = () => {
-
+  onBookUpdate = (book, shelf) => {
+    BooksAPI.update(book, shelf).then(() => {
+      BooksAPI.getAll().then(books => {
+        this.setState(() => {
+          return {
+            currentlyReading: books.filter((book) => book.shelf === 'currentlyReading'),
+            wantToRead: books.filter((book) => book.shelf === 'wantToRead'),
+            read: books.filter((book) => book.shelf === 'read')
+          };
+        });
+      });
+    });
   }
   render() {
-    let currentlyReading;
-    let wantToRead;
-    let read;
-    if (this.state.books) {
-      currentlyReading = this.state.books.filter((book) => book.shelf === 'currentlyReading');
-      wantToRead = this.state.books.filter((book) => book.shelf === 'wantToRead');
-      read = this.state.books.filter((book) => book.shelf === 'read');
-    }
     return (
       <div className="app">
         <Route path="/search" render={() => (<Search />)} />
@@ -43,9 +51,9 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-                <Bookshelf books={currentlyReading} title='Currently Reading' />
-                <Bookshelf books={wantToRead} title='Want To Read' />
-                <Bookshelf books={read} title='Read' />
+                <Bookshelf books={this.state.currentlyReading} title='Currently Reading' onBookUpdate={this.onBookUpdate} />
+                <Bookshelf books={this.state.wantToRead} title='Want To Read' onBookUpdate={this.onBookUpdate} />
+                <Bookshelf books={this.state.read} title='Read' onBookUpdate={this.onBookUpdate} />
               </div>
             </div>
             <div className="open-search">
