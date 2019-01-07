@@ -12,10 +12,11 @@ class Book extends React.Component {
     this.setState({ optionsState: this.props.book.shelf ? this.props.book.shelf : 'none' });
   }
   render() {
+    const bookImage = !!this.props.book.imageLinks ? this.props.book.imageLinks.thumbnail : 'https://dummyimage.com/128x193/2e7c31/fff.png&text=Cover+Missing';
     return (
       <div className="book">
         <div className="book-top">
-          {!!this.props.book.imageLinks.thumbnail && <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url(' + this.props.book.imageLinks.thumbnail + ')' }}></div>}
+          <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: 'url(' + bookImage + ')' }}></div>
           <div className="book-shelf-changer">
             <select onChange={(e) => this.onBookUpdate(e, this.props.book)} value={this.state.optionsState}>
               <option value="move" disabled>Move to...</option>
