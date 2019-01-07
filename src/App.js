@@ -1,7 +1,8 @@
 import React from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Switch, Route, Link } from 'react-router-dom';
 import Bookshelf from './components/Bookshelf';
 import Search from './components/Search';
+import Missing from './components/Missing';
 import * as BooksAPI from './BooksAPI';
 import './App.css';
 
@@ -42,8 +43,7 @@ class BooksApp extends React.Component {
   }
   render() {
     return (
-      <div className="app">
-        <Route path="/search" render={() => (<Search onBookUpdate={this.onBookUpdate} />)} />
+      <Switch className="app">
         <Route exact path="/" render={() => (
           <div className="list-books">
             <div className="list-books-title">
@@ -61,7 +61,9 @@ class BooksApp extends React.Component {
             </div>
           </div>
         )} />
-      </div>
+        <Route path="/search" render={() => (<Search onBookUpdate={this.onBookUpdate} />)} />
+        <Route path="*" component={Missing} />
+      </Switch>
     )
   }
 }
